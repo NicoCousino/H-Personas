@@ -2,6 +2,7 @@ import "../Estilos/MenuPrincipal.css"
 import React from "react";
 import {useState, useEffect} from "react";
 import {Link} from "react-router-dom";
+import  * as PersonaServicio from "../Servicios/PersonaServicio";
 
 export default function MenuPrincipal() {
 
@@ -11,16 +12,15 @@ export default function MenuPrincipal() {
     const [inputEdad, setInputEdad] = useState('')
     const [personas, setPersonas] = useState(PERSONAS)
     
-    useEffect (()=>{
-        let url = `http://localhost:8080/getPersonas`
-        fetch(url)
-        .then(res =>res.json()
-        .then(
-            respuesta => {
-            setPersonas(respuesta)
-            }
-        ))
+    useEffect (() => {
+        fetchData()
     },[])
+
+    const  fetchData = async () => {
+        let respuesta = await PersonaServicio.getPersonas()
+        console.log(respuesta)
+        setPersonas(respuesta)
+    }
   
     const handleInputNombre = (evento) =>{
       setInputNombre(evento.target.value)
@@ -33,21 +33,18 @@ export default function MenuPrincipal() {
     const clickAltaPersona = () => {
     }
   
-    const clickBuscar = ()=>{
-      if (inputEdad!='' && inputEdad<0) {
+    const clickBuscar =  async () =>{
+      if (inputEdad!=='' && inputEdad<0) {
         alert("Ingrese una Edad Valida")
       }
       else{
         let edad = inputEdad
-        if (inputEdad == ""){
+        if (inputEdad === ""){
           edad = -1
         }
-        let url = `http://localhost:8080/getPersonasFiltro?nombre=${inputNombre}&edad=${edad}`
-        fetch(url)
-        .then(res =>res.json()
-        .then(respuesta =>{
-          setPersonas(respuesta)
-        }))
+        let respuesta = await PersonaServicio.getPersonasFiltro(inputNombre, edad)
+        setPersonas(respuesta)
+
       }
   
   

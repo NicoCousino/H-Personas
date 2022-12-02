@@ -1,7 +1,8 @@
 import "../Estilos/AltaPersona.css"
 import React from "react";
-import { Link} from "react-router-dom";
-import {useState, useEffect} from "react";
+import {Link} from "react-router-dom";
+import {useState} from "react";
+import  * as PersonaServicio from "../Servicios/PersonaServicio";
 
 export default function AltaPersona(){
 
@@ -33,9 +34,10 @@ export default function AltaPersona(){
     }
 
 
-    const clickSubmit = () =>{
+    const clickSubmit = async (e) =>{
+        e.preventDefault()
         setCargando(true)
-        if (nombre==='' || apellido ==='' || edad==='' || edad <= 0 || direccion === '' || fecha=='') {
+        if (nombre==='' || apellido ==='' || edad==='' || edad <= 0 || direccion === '' || fecha==='') {
             setCargando(false)
             alert("Complete todos los campos correctamente")
         }
@@ -57,25 +59,21 @@ export default function AltaPersona(){
             }
             console.log(persona)
             
-            let url = `http://localhost:8080/addPersona`
-            fetch (url, {
-                method: "POST", mode: 'cors',
-                body: JSON.stringify(persona),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(()=>{
+            let respuesta = await PersonaServicio.addPersona(persona)
+            if (respuesta){
                 alert("Persona cargada correctamente")
-                setCargando(false)
-            })
-            .catch(e =>{
-                console.log(e)
+            }
+            else {
                 alert("Ocurrio un error")
-                setCargando(false)
-            })
+            }
+            setNombre("")
+            setApellido("")
+            setEdad("")
+            setDireccion("")
+            setFecha("")
+            setCargando(false)
 
-
+            
         }
     }
 
